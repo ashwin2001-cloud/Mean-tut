@@ -1,9 +1,13 @@
 <mat-card>
-  <mat-form-field>
-    <input matInput type="text" [(ngModel)]="enteredValue">
-  </mat-form-field>
-  <button mat-raised-button color="accent" (click)="onPostAdd()">Save Post</button>
+  <form #postForm= "ngForm" (submit)="onPostAdd(postForm)">
+    <mat-form-field>
+      <input matInput type="text" name="title" ngModel required #title="ngModel">
+      <mat-error *ngIf="title.invalid">Title Has To Be Filled</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" name="desc" ngModel required #desc="ngModel">
+      <mat-error *ngIf="desc.invalid">Description Has To Be Filled</mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="accent" type="submit">Save Post</button>
+  </form>
 </mat-card>
-<br>
-<p>Added post- {{ newPost }}</p>
-<p>Entered value- {{enteredValue}}</p>
