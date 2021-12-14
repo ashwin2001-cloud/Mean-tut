@@ -11,13 +11,13 @@ import { PostsService } from '../posts.service';
 })
 export class PostsListComponent implements OnInit, OnDestroy {
 
-  savedPosts: Post[];
+  savedPosts: Post[]= [];
   private postsSub: Subscription;
 
   constructor(public postsService: PostsService) { }
 
   ngOnInit(): void {
-    this.savedPosts= this.postsService.getPosts();
+    this.postsService.getPosts();
     this.postsSub= this.postsService.getPostsUpdatedlistener()
     .subscribe((posts: Post[])=>{
       this.savedPosts= posts;
