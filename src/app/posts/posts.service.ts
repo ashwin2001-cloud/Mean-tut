@@ -36,7 +36,7 @@ export class PostsService{
   }
 
   getPost(id: string){
-    return {...this.posts.find(post=> post.id===id)}
+    return this.http.get<{_id: string, title: string, desc: string}>(`http://localhost:3000/api/posts/${id}`);
   }
 
   addPost(title_arg: string, desc_arg: string){
@@ -61,6 +61,7 @@ export class PostsService{
   deletePost(postId: string){
     this.http.delete(`http://localhost:3000/api/posts/${postId}`)
     .subscribe((data)=>{
+      //in this scenario, we may not call postsUpdated subject
       console.log(data);
     })
     this.posts= this.posts.filter((post)=>{

@@ -18,13 +18,23 @@ app.use((req, res, next)=>{
 
 app.get('/api/posts', async (req, res)=>{
   let posts= await Posts.find({});
-
-  console.log(posts);
   return res.status(200).json({
     message: "Posts fetched successfully!",
     posts: posts
   })
 });
+
+app.get('/api/posts/:postId', async (req, res)=>{
+  let post= await Posts.findById(req.params.postId);
+  console.log('***Server: ', post, '***');
+  if(post){
+    return res.status(200).json(post);
+  }else{
+    return res.status(404).json({
+      message: 'Post not found!'
+    })
+  }
+})
 
 app.post('/api/posts', (req, res)=>{
   const post= new Posts({
