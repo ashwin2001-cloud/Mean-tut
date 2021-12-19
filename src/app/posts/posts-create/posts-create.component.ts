@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../posts.model';
 
@@ -16,12 +16,23 @@ export class PostsCreateComponent implements OnInit{
   private postId: string= null;
   post: Post= null;
   isLoading: boolean= false;
+  form: FormGroup
 
   constructor(public postsService: PostsService,
     public route: ActivatedRoute){}
     //'route' in constructor gives the path name, by which component was called
 
   ngOnInit(){
+    //initialize form and define its controls
+    this.form= new FormGroup({
+      //beginning form state, validators
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)]
+      }),
+      desc: new FormControl(null, {
+        validators: [Validators.required]
+      })
+    })
     this.route.paramMap.subscribe((paramMap: ParamMap)=>{
       if(paramMap.has('postId')){
         this.mode= 'edit';
@@ -31,6 +42,10 @@ export class PostsCreateComponent implements OnInit{
           this.isLoading= false;
           this.post= {id: postData._id, title: postData.title, desc: postData.desc}
         })
+        this.form.setValue({
+          title: this.post.title,
+          desc: this.post.desc
+        });
       }else{
         this.mode= 'create';
         this.postId= null;
@@ -40,20 +55,20 @@ export class PostsCreateComponent implements OnInit{
     console.log('***', this.post, '***');
   }
 
-  onSavePost(postForm: NgForm){
+  onSavePost(){
     // console.dir(postForm);
-    if(postForm.invalid){
+    if(this.form.invalid){
       return;
     }
 
     this.isLoading= true;
     if(this.mode == 'create'){
-      this.postsService.addPost(postForm.value.title, postForm.value.desc);
+      this.postsService.addPost(this.form.value.title, this.form.value.desc);
     }
     else if(this.mode == 'edit'){
-      this.postsService.updatePost(this.post.id, postForm.value.title, postForm.value.desc);
+      this.postsService.updatePost(this.post.id, this.form.value.title, this.form.value.desc);
     }
-    postForm.resetForm();
+    this.form.reset();
   }
 
 
