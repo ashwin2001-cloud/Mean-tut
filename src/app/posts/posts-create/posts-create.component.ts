@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Post } from '../posts.model';
+import { mimeType } from './mime-type.validator';
 
 import { PostsService } from '../posts.service';
 
@@ -16,7 +17,8 @@ export class PostsCreateComponent implements OnInit{
   private postId: string= null;
   post: Post= null;
   isLoading: boolean= false;
-  form: FormGroup
+  form: FormGroup;
+  imageURL: string;
 
   constructor(public postsService: PostsService,
     public route: ActivatedRoute){}
@@ -29,9 +31,8 @@ export class PostsCreateComponent implements OnInit{
       title: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
       }),
-      desc: new FormControl(null, {
-        validators: [Validators.required]
-      })
+      desc: new FormControl(null, {validators: [Validators.required]}),
+      image: new FormControl(null, {validators: [Validators.required], asyncValidators: [mimeType]})
     })
     this.route.paramMap.subscribe((paramMap: ParamMap)=>{
       if(paramMap.has('postId')){
@@ -41,11 +42,11 @@ export class PostsCreateComponent implements OnInit{
         this.postsService.getPost(this.postId).subscribe(postData=>{
           this.isLoading= false;
           this.post= {id: postData._id, title: postData.title, desc: postData.desc}
+          this.form.patchValue({
+            title: this.post.title,
+            desc: this.post.desc
+          });
         })
-        this.form.setValue({
-          title: this.post.title,
-          desc: this.post.desc
-        });
       }else{
         this.mode= 'create';
         this.postId= null;
@@ -57,6 +58,8 @@ export class PostsCreateComponent implements OnInit{
 
   onSavePost(){
     // console.dir(postForm);
+    //if condition in validators is not fullfilled, this.form.invalid=false
+    console.log(this.form.value.title);
     if(this.form.invalid){
       return;
     }
@@ -71,5 +74,21 @@ export class PostsCreateComponent implements OnInit{
     this.form.reset();
   }
 
+  //no need to import Event, as it is default JavaScript type
+  onImagePicked(event: Event){
+    const file= (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({image: file})
+    this.form.get('image').updateValueAndValidity();
+    //FileReader-> feature provided by JavaScript; used to get information about files
+    const reader= new FileReader();
+    console.log(reader);
+    //reader.onload-> when file has been uploaded
+    reader.onload= ()=>{
+      //IMP: reader.result contains reader.readAsDataURL(file);
+      this.imageURL= reader.result as string;
+    }
+    reader.readAsDataURL(file);
+    // console.log(event, file, this.form);
+  }
 
 }

@@ -1,4 +1,5 @@
 const express= require('express');
+
 const router= express.Router();
 
 const Posts= require('../models/post');
@@ -23,7 +24,7 @@ router.get('/api/posts/:postId', async (req, res)=>{
   }
 })
 
-router.post('/api/posts', (req, res)=>{
+router.post('/api/posts', multer(storage).single('image'), (req, res)=>{
   const post= new Posts({
     title: req.body.title,
     desc: req.body.desc

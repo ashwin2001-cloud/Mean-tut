@@ -7,7 +7,10 @@
     </mat-form-field>
     <div>
       <button mat-stroked-button type="button" (click)="addImage.click()">Add Image</button>
-      <input hidden #addImage type="file">
+      <input hidden #addImage (change)="onImagePicked($event)" type="file">
+    </div>
+    <div *ngIf="imageURL!==null && imageURL!='' && !form.get('image').invalid">
+      <img [src]="imageURL" [alt]="form.value.title" class="image-preview">
     </div>
     <mat-form-field>
       <input matInput type="text" formControlName="desc" placeholder="Enter Description">
