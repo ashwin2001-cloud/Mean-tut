@@ -41,10 +41,11 @@ export class PostsCreateComponent implements OnInit{
         this.isLoading= true;
         this.postsService.getPost(this.postId).subscribe(postData=>{
           this.isLoading= false;
-          this.post= {id: postData._id, title: postData.title, desc: postData.desc}
-          this.form.patchValue({
+          this.post= {id: postData._id, title: postData.title, desc: postData.desc, imagePath: postData.imagePath}
+          this.form.setValue({
             title: this.post.title,
-            desc: this.post.desc
+            desc: this.post.desc,
+            image: this.post.imagePath
           });
         })
       }else{
@@ -66,10 +67,10 @@ export class PostsCreateComponent implements OnInit{
 
     this.isLoading= true;
     if(this.mode == 'create'){
-      this.postsService.addPost(this.form.value.title, this.form.value.desc);
+      this.postsService.addPost(this.form.value.title, this.form.value.desc, this.form.value.image);
     }
     else if(this.mode == 'edit'){
-      this.postsService.updatePost(this.post.id, this.form.value.title, this.form.value.desc);
+      this.postsService.updatePost(this.post.id, this.form.value.title, this.form.value.desc, this.form.value.image);
     }
     this.form.reset();
   }

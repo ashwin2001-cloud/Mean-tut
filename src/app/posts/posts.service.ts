@@ -21,7 +21,8 @@ export class PostsService{
         return {
           title: post.title,
           desc: post.desc,
-          id: post._id
+          id: post._id,
+          imagePath: post.imagePath
         }
       })
     }))
@@ -37,24 +38,42 @@ export class PostsService{
   }
 
   getPost(id: string){
-    return this.http.get<{_id: string, title: string, desc: string}>(`http://localhost:3000/api/posts/${id}`);
+    return this.http.get<{_id: string, title: string, desc: string, imagePath: string}>(`http://localhost:3000/api/posts/${id}`);
   }
 
-  addPost(title_arg: string, desc_arg: string){
-    const post: Post= { id: null, title: title_arg, desc: desc_arg };
-    this.http.post<{message: string, id: string}>('http://localhost:3000/api/posts', post)
+  addPost(title: string, desc: string, image: File){
+    const postData= new FormData();
+    postData.append('title', title);
+    postData.append('desc', desc);
+    postData.append('image', image, title);
+    this.http.post<{message: string, post: Post}>('http://localhost:3000/api/posts', postData)
     .subscribe((data)=>{
       // console.log(data.message);
-      post.id= data.id;
+      const post: Post= { id: data.post.id, title: title, desc: desc, imagePath: data.post.imagePath };
       this.posts.push(post);
       this.postsUpdated.next([...this.posts]);
       this.router.navigate(['/']);
     })
   }
 
-  updatePost(id: string, title: string, desc: string){
-    const post: Post= {id: id, title: title, desc: desc};
-    this.http.patch('http://localhost:3000/api/posts', post)
+  updatePost(id: string, title: string, desc: string, image: File | String){
+    // const post: Post= {id: id, title: title, desc: desc, imagePath: null}
+    let postData;
+    if(typeof(image)==='object'){
+      postData= new FormData();
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('desc', desc);
+      postData.append('image', image, title);
+    }else{
+      postData= {
+        id: id,
+        title: title,
+        desc: desc,
+        imagePath: image
+      }
+    }
+    this.http.patch('http://localhost:3000/api/posts', postData)
     .subscribe((data)=>{
       // console.log(data);
       this.router.navigate(['/']);

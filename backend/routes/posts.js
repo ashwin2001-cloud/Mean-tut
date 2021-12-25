@@ -1,8 +1,34 @@
 const express= require('express');
+const multer= require('multer');
+const path= require('path');
 
 const router= express.Router();
 
 const Posts= require('../models/post');
+
+const MIME_TYPE_MAP= {
+  //For mimetype 'image/png', add 'png' extension; and so on
+  'image/png': 'png',
+  'image/jpeg': 'jpeg',
+  'image/jpg': 'jpg'
+}
+
+const storage= multer.diskStorage({
+  destination: (req, file, cb)=>{
+    const isValid= MIME_TYPE_MAP[file.mimetype];
+    let error= new Error("Invalid Mime Type");
+    if(isValid){
+      error= null;
+    }
+    cb(error, "backend/images");
+  },
+  filename: (req, file, cb)=>{
+    //const name does not give file extension, so we use MIME_TYPE_MAP
+    const name= file.originalname.toLowerCase().split(' ').join('-');
+    const ext= MIME_TYPE_MAP[file.mimetype];
+    cb(null, name + '-' + Date.now() + '.' + ext);
+  }
+})
 
 router.get('/api/posts', async (req, res)=>{
   let posts= await Posts.find({});
@@ -24,16 +50,23 @@ router.get('/api/posts/:postId', async (req, res)=>{
   }
 })
 
-router.post('/api/posts', multer(storage).single('image'), (req, res)=>{
+router.post('/api/posts', multer({storage: storage}).single('image'), (req, res)=>{
+  const url= req.protocol + '://' + req.get('host');
   const post= new Posts({
     title: req.body.title,
-    desc: req.body.desc
+    desc: req.body.desc,
+    imagePath: url + '/images/' + req.file.filename
   })
   console.log(post);
   post.save();
   return res.status(200).json({
     message: "Post added successfully",
-    id: post._id
+    post: {
+      id: post._id,
+      title: post.title,
+      desc: post.desc,
+      imagePath: post.imagePath
+    }
   })
 })
 
@@ -45,11 +78,22 @@ router.delete('/api/posts/:id', async (req, res)=>{
   })
 })
 
-router.patch('/api/posts', async (req, res)=>{
-  let postUpdated= await Posts.findByIdAndUpdate(req.body.id, {
-    title: req.body.title,
-    desc: req.body.desc
-  })
+router.patch('/api/posts', multer({storage: storage}).single('image'), async (req, res)=>{
+
+  if(req.file){
+    const url= req.protocol + '://' + req.get('host');
+    let postUpdated= await Posts.findByIdAndUpdate(req.body.id, {
+      title: req.body.title,
+      desc: req.body.desc,
+      imagePath: url + '/images/' + req.file.filename
+    })
+  } else {
+    let postUpdated= await Posts.findByIdAndUpdate(req.body.id, {
+      title: req.body.title,
+      desc: req.body.desc
+    })
+  }
+
   return res.status(200).json({
     message: 'Post updated successfully'
   })

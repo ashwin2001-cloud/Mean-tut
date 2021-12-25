@@ -1,5 +1,6 @@
 export interface Post{
   id: string,
   title: string,
-  desc: string
+  desc: string,
+  imagePath: string
 }
