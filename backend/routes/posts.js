@@ -31,10 +31,20 @@ const storage= multer.diskStorage({
 })
 
 router.get('/api/posts', async (req, res)=>{
-  let posts= await Posts.find({});
+  console.log(req.query);
+  const pageSize= parseInt(req.query.pageSize);
+  const currentPage= parseInt(req.query.page);
+  const postQuery= Posts.find({});
+  if(pageSize && currentPage){
+    postQuery
+    .skip(pageSize*(currentPage-1))
+    .limit(pageSize);
+  }
+  let posts= await postQuery;
   return res.status(200).json({
     message: "Posts fetched successfully!",
-    posts: posts
+    posts: posts,
+    maxPosts: await Posts.count()
   })
 });
 

@@ -11,3 +11,8 @@ mat-spinner{
   height:400px;
   width:600px;
 }
+
+mat-paginator{
+  margin-top: 50px;
+  border: 1px solid grey;
+}

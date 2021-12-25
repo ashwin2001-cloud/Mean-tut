@@ -7,6 +7,7 @@
     </mat-form-field>
     <div>
       <button mat-stroked-button type="button" (click)="addImage.click()">Add Image</button>
+      <!-- $event gives information about the event -->
       <input hidden #addImage (change)="onImagePicked($event)" type="file">
     </div>
     <div *ngIf="imageURL!==null && imageURL!='' && !form.get('image').invalid">
