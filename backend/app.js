@@ -21,6 +21,7 @@ app.use((req, res, next)=>{
   next();
 })
 
-app.use('/', require('./routes/posts'));
+app.use('/api/posts', require('./routes/posts'));
+app.use('/api/users', require('./routes/users'));
 
 module.exports= app;

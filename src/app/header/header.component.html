@@ -1,8 +1,15 @@
 <mat-toolbar color="primary">
   <span><a routerLink="/">My Application</a></span>
-  <ul>
+  <div id="header-space"></div>
+  <ul id="links-list">
     <li>
       <a mat-button routerLink="/create" routerLinkActive="mat-accent">Create Post</a>
+    </li>
+    <li>
+      <a mat-button routerLink="/login" routerLinkActive="mat-accent">Login</a>
+    </li>
+    <li>
+      <a mat-button routerLink="/signup" routerLinkActive="mat-accent">Signup</a>
     </li>
   </ul>
 </mat-toolbar>

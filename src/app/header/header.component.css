@@ -1,8 +1,21 @@
+mat-toolbar{
+  display: flex;
+}
+
 a{
   color: white;
   text-decoration: none;
 }
 
-ul{
+#links-list{
   list-style: none;
+}
+
+#links-list li{
+  display: inline-block;
+  /* border: 1px solid black; */
+}
+
+#header-space{
+  margin: auto;
 }

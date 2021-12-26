@@ -30,7 +30,7 @@ const storage= multer.diskStorage({
   }
 })
 
-router.get('/api/posts', async (req, res)=>{
+router.get('/', async (req, res)=>{
   console.log(req.query);
   const pageSize= parseInt(req.query.pageSize);
   const currentPage= parseInt(req.query.page);
@@ -48,7 +48,7 @@ router.get('/api/posts', async (req, res)=>{
   })
 });
 
-router.get('/api/posts/:postId', async (req, res)=>{
+router.get('/:postId', async (req, res)=>{
   let post= await Posts.findById(req.params.postId);
   console.log('***Server: ', post, '***');
   if(post){
@@ -60,7 +60,7 @@ router.get('/api/posts/:postId', async (req, res)=>{
   }
 })
 
-router.post('/api/posts', multer({storage: storage}).single('image'), (req, res)=>{
+router.post('/', multer({storage: storage}).single('image'), (req, res)=>{
   const url= req.protocol + '://' + req.get('host');
   const post= new Posts({
     title: req.body.title,
@@ -80,7 +80,7 @@ router.post('/api/posts', multer({storage: storage}).single('image'), (req, res)
   })
 })
 
-router.delete('/api/posts/:id', async (req, res)=>{
+router.delete('/:id', async (req, res)=>{
   console.log(req.params.id);
   let deletedPost= await Posts.findByIdAndDelete(req.params.id);
   return res.status(200).json({
@@ -88,7 +88,7 @@ router.delete('/api/posts/:id', async (req, res)=>{
   })
 })
 
-router.patch('/api/posts', multer({storage: storage}).single('image'), async (req, res)=>{
+router.patch('/', multer({storage: storage}).single('image'), async (req, res)=>{
 
   if(req.file){
     const url= req.protocol + '://' + req.get('host');
