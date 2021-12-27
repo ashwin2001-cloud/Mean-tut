@@ -2,14 +2,17 @@
   <span><a routerLink="/">My Application</a></span>
   <div id="header-space"></div>
   <ul id="links-list">
-    <li>
+    <li *ngIf="isAuthenticated">
       <a mat-button routerLink="/create" routerLinkActive="mat-accent">Create Post</a>
     </li>
-    <li>
+    <li *ngIf="!isAuthenticated">
       <a mat-button routerLink="/login" routerLinkActive="mat-accent">Login</a>
     </li>
-    <li>
+    <li *ngIf="!isAuthenticated">
       <a mat-button routerLink="/signup" routerLinkActive="mat-accent">Signup</a>
+    </li>
+    <li *ngIf="isAuthenticated">
+      <button mat-stroked-button>LogOut</button>
     </li>
   </ul>
 </mat-toolbar>

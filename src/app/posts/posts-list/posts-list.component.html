@@ -12,8 +12,8 @@
     </div>
     <mat-action-row>
       <!-- [routerLink]="['/edit', post.id]" can also be used -->
-      <a routerLink="/edit/{{post.id}}" mat-button color="primary">Edit</a>
-      <button mat-button color="warn" (click)="onDelete(post.id)">Delete</button>
+      <a *ngIf="isAuthenticated" routerLink="/edit/{{post.id}}" mat-button color="primary">Edit</a>
+      <button *ngIf="isAuthenticated" mat-button color="warn" (click)="onDelete(post.id)">Delete</button>
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
