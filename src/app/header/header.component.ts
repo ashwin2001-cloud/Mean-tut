@@ -9,7 +9,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  isAuthenticated;
+  isAuthenticated: boolean;
   private authListenerSub: Subscription;
 
   constructor(private authService: AuthService) { }
@@ -24,4 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authListenerSub.unsubscribe();
   }
 
+  onLogOut(){
+    this.authService.logout();
+  }
 }

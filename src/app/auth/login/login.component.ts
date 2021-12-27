@@ -20,6 +20,7 @@ export class LoginComponent implements OnInit {
       console.log('Invalid');
     }
     console.log(loginForm.value);
+    this.isLoading= true;
     this.authService.login(loginForm.value.email, loginForm.value.password);
   }
 
