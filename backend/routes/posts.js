@@ -5,6 +5,7 @@ const path= require('path');
 const router= express.Router();
 
 const Posts= require('../models/post');
+const checkAuth= require('../middleware/check-auth');
 
 const MIME_TYPE_MAP= {
   //For mimetype 'image/png', add 'png' extension; and so on
@@ -13,6 +14,7 @@ const MIME_TYPE_MAP= {
   'image/jpg': 'jpg'
 }
 
+//middleware logic for Multer
 const storage= multer.diskStorage({
   destination: (req, file, cb)=>{
     const isValid= MIME_TYPE_MAP[file.mimetype];
@@ -60,7 +62,7 @@ router.get('/:postId', async (req, res)=>{
   }
 })
 
-router.post('/', multer({storage: storage}).single('image'), (req, res)=>{
+router.post('/', checkAuth, multer({storage: storage}).single('image'), (req, res)=>{
   const url= req.protocol + '://' + req.get('host');
   const post= new Posts({
     title: req.body.title,
@@ -80,7 +82,7 @@ router.post('/', multer({storage: storage}).single('image'), (req, res)=>{
   })
 })
 
-router.delete('/:id', async (req, res)=>{
+router.delete('/:id', checkAuth, async (req, res)=>{
   console.log(req.params.id);
   let deletedPost= await Posts.findByIdAndDelete(req.params.id);
   return res.status(200).json({
@@ -88,7 +90,7 @@ router.delete('/:id', async (req, res)=>{
   })
 })
 
-router.patch('/', multer({storage: storage}).single('image'), async (req, res)=>{
+router.patch('/', checkAuth, multer({storage: storage}).single('image'), async (req, res)=>{
 
   if(req.file){
     const url= req.protocol + '://' + req.get('host');
