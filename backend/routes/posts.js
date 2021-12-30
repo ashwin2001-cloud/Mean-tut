@@ -67,7 +67,8 @@ router.post('/', checkAuth, multer({storage: storage}).single('image'), (req, re
   const post= new Posts({
     title: req.body.title,
     desc: req.body.desc,
-    imagePath: url + '/images/' + req.file.filename
+    imagePath: url + '/images/' + req.file.filename,
+    creator: req.userData.userId
   })
   console.log(post);
   post.save();
