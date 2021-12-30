@@ -84,28 +84,33 @@ router.post('/', checkAuth, multer({storage: storage}).single('image'), (req, re
 })
 
 router.delete('/:id', checkAuth, async (req, res)=>{
-  console.log(req.params.id);
-  let deletedPost= await Posts.findByIdAndDelete(req.params.id);
-  return res.status(200).json({
+  let postUpdated= await Posts.findOneAndDelete({_id: req.params.id, creator: req.userData.userId });
+  if(!postUpdated){
+    return res.status(401).json({
+      message: 'Unauthorized'
+    })
+  }
+  res.status(200).json({
     message: 'Delete called!'
   })
 })
 
 router.patch('/', checkAuth, multer({storage: storage}).single('image'), async (req, res)=>{
 
-  if(req.file){
-    const url= req.protocol + '://' + req.get('host');
-    let postUpdated= await Posts.findByIdAndUpdate(req.body.id, {
-      title: req.body.title,
-      desc: req.body.desc,
-      imagePath: url + '/images/' + req.file.filename
-    })
-  } else {
-    let postUpdated= await Posts.findByIdAndUpdate(req.body.id, {
-      title: req.body.title,
-      desc: req.body.desc
+  let postUpdated= await Posts.findOne({_id: req.body.id, creator: req.userData.userId });
+  if(!postUpdated){
+    return res.status(401).json({
+      message: 'Unauthorized'
     })
   }
+  postUpdated.title= req.body.title;
+  postUpdated.desc= req.body.desc;
+  if(req.file){
+    const url= req.protocol + '://' + req.get('host');
+    postUpdated.imagePath= url + '/images/' + req.file.filename;
+
+  }
+  postUpdated.save();
 
   return res.status(200).json({
     message: 'Post updated successfully'
