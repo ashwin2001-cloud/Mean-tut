@@ -43,6 +43,7 @@ router.post('/login', async (req, res)=>{
     return res.status(200).json({
       message: 'Logged in Successfully!',
       token: token,
+      userId: user._id,
       expiresIn: 3600
     })
 
