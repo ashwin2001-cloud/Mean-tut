@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { defaultThrottleConfig } from 'rxjs/internal/operators/throttle';
 
 import { AuthData } from './authdata.model';
 
@@ -30,9 +29,9 @@ export class AuthService{
       password: password
     }
     this.http.post<{message: string, user: any}>('http://localhost:3000/api/users/signup', authData)
-    .subscribe((data)=>{
-      console.log(data);
-      this.router.navigate(['/login']);
+    .subscribe({
+      next: (data)=> {this.router.navigate(['/'])},
+      error: (err)=> {this.authStatusListener.next(false);}
     })
   }
 
@@ -42,20 +41,26 @@ export class AuthService{
       password: password
     }
     this.http.post<{message: string, token: string, userId: string, expiresIn: number}>('http://localhost:3000/api/users/login', authData)
-    .subscribe((data)=>{
-      this.token= data.token;
-      console.log(this.token);
-      if(this.token){
-        const expiresIn= data.expiresIn;
-        this.setAuthtimer(expiresIn);
-        this.isAuthenticated= true;
-        this.userId= data.userId;
-        this.authStatusListener.next(true);
-        const now= new Date();
-        const expirationDate= new Date(now.getTime() + (expiresIn*1000));
-        console.log(expirationDate);
-        this.saveAuthData(this.token, expirationDate, data.userId);
-        this.router.navigate(['/']);
+    .subscribe({
+      next: (data)=>{
+        this.token= data.token;
+        console.log(this.token);
+        if(this.token){
+          const expiresIn= data.expiresIn;
+          this.setAuthtimer(expiresIn);
+          this.isAuthenticated= true;
+          this.userId= data.userId;
+          this.authStatusListener.next(true);
+          const now= new Date();
+          const expirationDate= new Date(now.getTime() + (expiresIn*1000));
+          console.log(expirationDate);
+          this.saveAuthData(this.token, expirationDate, data.userId);
+          this.router.navigate(['/']);
+        }
+      },
+      error: (err)=>{
+        console.log(err);
+        this.authStatusListener.next(false);
       }
     })
   }
