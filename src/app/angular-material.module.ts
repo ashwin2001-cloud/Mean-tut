@@ -22,4 +22,4 @@ import { MatDialogModule } from '@angular/material/dialog';
   ]
 })
 
-export class AngularMaterialModule{}
+export class AngularMatModule{}

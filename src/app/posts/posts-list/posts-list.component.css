@@ -8,8 +8,8 @@ mat-spinner{
 }
 
 .post-image img{
-  height:400px;
-  width:600px;
+  height:100px;
+  width:150px;
 }
 
 mat-paginator{
