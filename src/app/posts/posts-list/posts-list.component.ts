@@ -50,9 +50,13 @@ export class PostsListComponent implements OnInit, OnDestroy {
   }
 
   onDelete(postId: string){
-    this.postsService.deletePost(postId).subscribe((data)=>{
-      this.currentPage=1;
-      this.postsService.getPosts(this.postsPerPage, 1);
+    this.isLoading= true;
+    this.postsService.deletePost(postId).subscribe({
+      next: (data)=>{
+        this.currentPage=1;
+        this.postsService.getPosts(this.postsPerPage, 1);
+      },
+      error: ()=>{this.isLoading= false}
     })
   }
 
