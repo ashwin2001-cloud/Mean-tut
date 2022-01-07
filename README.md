@@ -1,6 +1,6 @@
 # MeanTut
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.3.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.3. This is a basic app, where users can create/delete/edit posts and post image files when authenticated. 
 
 ## Development server
 
