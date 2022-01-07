@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-mongoose.connect('mongodb://localhost/angular_tut_db');
+mongoose.connect('mongodb://localhost/' + process.env.MONGODB_DB);
 
 const db=mongoose.connection;
 

@@ -3,8 +3,11 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { Post } from "./posts.model";
+
+const BACKEND_URL= environment.apiUrl + '/posts/';
 
 @Injectable({providedIn: 'root'})
 export class PostsService{
@@ -16,7 +19,7 @@ export class PostsService{
 
   getPosts(pageSize: number, currentPage: number){
     const queryParams= `?pageSize=${pageSize}&page=${currentPage}`;
-    this.http.get<{message: string, posts: any, maxPosts: number}>('http://localhost:3000/api/posts' + queryParams)
+    this.http.get<{message: string, posts: any, maxPosts: number}>(BACKEND_URL + queryParams)
     .pipe(map((postData)=>{
       return {
         posts: postData.posts.map(post=>{
@@ -43,7 +46,7 @@ export class PostsService{
   }
 
   getPost(id: string){
-    return this.http.get<{_id: string, title: string, desc: string, imagePath: string, creator: string}>(`http://localhost:3000/api/posts/${id}`);
+    return this.http.get<{_id: string, title: string, desc: string, imagePath: string, creator: string}>(BACKEND_URL + id);
   }
 
   addPost(title: string, desc: string, image: File){
@@ -51,7 +54,7 @@ export class PostsService{
     postData.append('title', title);
     postData.append('desc', desc);
     postData.append('image', image, title);
-    this.http.post<{message: string, post: Post}>('http://localhost:3000/api/posts', postData)
+    this.http.post<{message: string, post: Post}>(BACKEND_URL, postData)
     .subscribe((data)=>{
       //we don't call postsUpdated observable here, as we will navigate to '/' (posts-list component). So, getPosts will be called again.
       //same for updatePost
@@ -76,7 +79,7 @@ export class PostsService{
         imagePath: image
       }
     }
-    this.http.patch('http://localhost:3000/api/posts', postData)
+    this.http.patch(BACKEND_URL, postData)
     .subscribe((data)=>{
       // console.log(data);
       this.router.navigate(['/']);
@@ -84,7 +87,7 @@ export class PostsService{
   }
 
   deletePost(postId: string){
-    return this.http.delete<{message: string}>(`http://localhost:3000/api/posts/${postId}`);
+    return this.http.delete<{message: string}>(BACKEND_URL + postId);
   }
 
 }
